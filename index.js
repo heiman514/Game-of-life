@@ -243,7 +243,6 @@ function mouseDragged() {
     /**
      * If the mouse coordinate is outside the board
      */
-    // pattern = generatePattern()
 
     if (mouseX > unitLength * columns || mouseY > unitLength * rows) {
         return;
@@ -332,4 +331,5 @@ document.querySelector('#random-color').addEventListener('click', function(){
     randomColorMode = true
 })
 
+// DOT 
 
