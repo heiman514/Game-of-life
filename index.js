@@ -11,6 +11,7 @@ let darkThem = {
     strokeColor: 255,
     boxColor: 220
 }
+let panelColor;
 let board;
 let count;
 let footerHeight = 350;
@@ -20,7 +21,7 @@ let patternText = ``
 let pattern = generatePattern()
 let fr = 30 + ' fps'
 let control = document.querySelector('div.control')
-let randomColorMode = false
+let colorMode = 'classic'
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight - footerHeight);
@@ -51,13 +52,13 @@ function init() {
 
     for (let i = 0; i < columns; i++) {
         board[i] = []
-    for (let j = 0; j < rows; j++) {
-        board[i][j] = {
-            alive: 0,
-            nextAlive: 0,
-            color: lightThem.boxColor
+        for (let j = 0; j < rows; j++) {
+            board[i][j] = {
+                alive: 0,
+                nextAlive: 0,
+                color: lightThem.boxColor,
+            }
         }
-    }
     }
     noLoop();
     count = 0
@@ -70,11 +71,14 @@ function draw() {
     for (let i = 0; i < columns; i++) {
         for (let j = 0; j < rows; j++) {
             let cell = board[i][j]
+            
             if (cell.alive == 1) {
-                if(randomColorMode === false) {
+                if (colorMode === 'classic') {
                     isDarkMode ? cell.color = darkThem.boxColor : cell.color = lightThem.boxColor
-                } else {
-                    cell.color = color(random(255),random(255),random(255))
+                } else if(colorMode === 'random') {
+                    cell.color = color(random(255), random(255), random(255))
+                } else if(colorMode === 'panel'){
+                    cell.color = color(panelColor)
                 }
                 fill(cell.color);
             } else if (cell.alive == 0) {
@@ -105,7 +109,9 @@ function generate() {
                     // The modulo operator is crucial for wrapping on the edge
                     let peerX = (x + dx + columns) % columns
                     let peerY = (y + dy + rows) % rows
-                    neighbors += board[peerX][peerY].alive
+                    if (board[peerX][peerY].alive >= 1) {
+                        neighbors += 1
+                    }
                 }
             }
 
@@ -288,9 +294,9 @@ function changeSpeed() {
 }
 
 document.querySelector('#reset-game')
-.addEventListener('click', function () {
-    init();
-});
+    .addEventListener('click', function () {
+        init();
+    });
 
 document.querySelector('#stop-game').addEventListener('click', function () {
     noLoop();
@@ -313,22 +319,28 @@ let themBtn = document.querySelector('#gameStyle')
 themBtn.addEventListener('click', changeThem)
 
 function changeThem() {
-    if(themBtn.innerHTML === 'Dark Mode') {
+    if (themBtn.innerHTML === 'Dark Mode') {
         themBtn.innerHTML = 'Light Mode'
         isDarkMode = true
     } else {
         themBtn.innerHTML = 'Dark Mode'
         isDarkMode = false
-    }    
+    }
 }
 
 // change color
 document.querySelector('#classic').addEventListener('click', function () {
-    randomColorMode = false
+    colorMode = 'classic'
 })
 
-document.querySelector('#random-color').addEventListener('click', function(){
-    randomColorMode = true
+document.querySelector('#random-color').addEventListener('click', function () {
+    colorMode = 'random'
+})
+
+document.querySelector('#panel-color').addEventListener('change', function(){
+    colorMode = 'panel'
+    console.log(this.value);
+    panelColor = this.value
 })
 
 // DOT 
